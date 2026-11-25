@@ -18,7 +18,13 @@ BLOCKS = ("config", "hpf", "eq", "comp", "gate")
 
 PUSH_ORDER = ("config", "hpf", "eq", "comp", "gate")
 
-EQ_TYPES = ("PEQ", "VEQ4", "VEQ6", "HShv", "LShv", "LPF1", "HPF1")
+# Types de bande EQ réels de la série X-Air (défaut X32 : VEQ4/VEQ6/LPF1/HPF1).
+EQ_TYPES = ("LCut", "LShv", "PEQ", "VEQ", "HShv", "HCut")
+
+EQ_TYPE_ALIASES = {"VEQ4": "VEQ", "VEQ6": "VEQ", "HPF1": "LCut", "LPF1": "HCut"}
+
+# Le ratio du compresseur X-Air est une échelle à crans fixes, pas continue.
+COMP_RATIOS = (1.1, 1.3, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 7.0, 10.0, 20.0, 100.0)
 
 TESSITURES = ("Homme", "Femme")
 
@@ -69,10 +75,10 @@ class Gate:
 
     def validated(self) -> "Gate":
         _check("gate.thr", self.thr, -80.0, 0.0)
-        _check("gate.range", self.range, 0.0, 140.0)
-        _check("gate.attack", self.attack, 0.0, 2000.0)
-        _check("gate.hold", self.hold, 0.0, 2000.0)
-        _check("gate.release", self.release, 0.0, 5000.0)
+        _check("gate.range", self.range, 3.0, 60.0)
+        _check("gate.attack", self.attack, 0.0, 120.0)
+        _check("gate.hold", self.hold, 0.02, 2000.0)
+        _check("gate.release", self.release, 5.0, 4000.0)
         return self
 
 
@@ -95,6 +101,7 @@ class EqBand:
         )
 
     def validated(self) -> "EqBand":
+        self.type = EQ_TYPE_ALIASES.get(self.type, self.type)
         if self.band not in (1, 2, 3, 4):
             raise PresetError(f"eq.band = {self.band} invalide (attendu 1 à 4)")
         if self.type not in EQ_TYPES:
@@ -114,7 +121,7 @@ class Comp:
     release: float = 90.0
     knee: float = 2.0
     mgain: float = 3.0
-    wdm: float = 100.0
+    mix: float = 100.0
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Comp":
@@ -126,39 +133,42 @@ class Comp:
             release=float(data.get("release", 90.0)),
             knee=float(data.get("knee", 2.0)),
             mgain=float(data.get("mgain", 3.0)),
-            wdm=float(data.get("wdm", 100.0)),
+            mix=float(data.get("mix", data.get("wdm", 100.0))),
         )
 
     def validated(self) -> "Comp":
-        _check("comp.thr", self.thr, -80.0, 0.0)
-        _check("comp.ratio", self.ratio, 1.0, 32.0)
-        _check("comp.attack", self.attack, 0.0, 500.0)
-        _check("comp.release", self.release, 2.0, 5000.0)
+        _check("comp.thr", self.thr, -60.0, 0.0)
+        if not any(abs(self.ratio - allowed) < 0.01 for allowed in COMP_RATIOS):
+            raise PresetError(
+                f"comp.ratio = {self.ratio} n'est pas un cran valide (crans : {COMP_RATIOS})"
+            )
+        _check("comp.attack", self.attack, 0.0, 120.0)
+        _check("comp.release", self.release, 5.0, 4000.0)
         _check("comp.knee", self.knee, 0.0, 5.0)
-        _check("comp.mgain", self.mgain, -24.0, 24.0)
-        _check("comp.wdm", self.wdm, 0.0, 100.0)
+        _check("comp.mgain", self.mgain, 0.0, 24.0)
+        _check("comp.mix", self.mix, 0.0, 100.0)
         return self
 
 
 @dataclass
 class ChannelConfig:
+    """Le nom et la couleur de tranche. Pas d'icône : la série X-Air n'en expose
+    pas en scène/OSC (contrairement au X32). Ne touche jamais à la source (insrc)."""
+
     name: str = ""
     color: int = 0
-    icon: int = 0
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ChannelConfig":
         return cls(
             name=str(data.get("name", "")),
             color=int(data.get("color", 0)),
-            icon=int(data.get("icon", 0)),
         )
 
     def validated(self) -> "ChannelConfig":
         if len(self.name) > 12:
             raise PresetError("config.name trop long (12 caractères maximum)")
         _check("config.color", self.color, 0, 15)
-        _check("config.icon", self.icon, 0, 73)
         return self
 
 

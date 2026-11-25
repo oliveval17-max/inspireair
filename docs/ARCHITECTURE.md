@@ -37,11 +37,28 @@ en dernier ; un preset appliqué sur une tranche vocalise ne coupe pas la voix
 avant que le reste soit en place. Le gain de compensation du compresseur
 (`mgain`) vit dans le bloc comp mais pourra recevoir une case dédiée dans la GUI.
 
+### Cartographie OSC vérifiée contre la scène de référence
+
+Tirée des outils XAirGetScene/XAirSetScene (P. Maillot / K. Mitchell) et de
+la scène `.scn` d'exemple authentique :
+
+| Bloc | Nœud X-Air | Détails |
+|---|---|---|
+| Config | `{p}/config` | `{name, color, insrc, rtnsrc}` — pas d'icône en OSC ; insrc/rtnsrc jamais touchés |
+| Preamp | `{p}/preamp` | `{trim, rtnsw, invert, hpon, hpf}` — le HPF vit ICI (hpon/hpf), pas sous `/hpf/` |
+| Gate | `{p}/gate` | `{on, mode, thr, range, attack, hold, release, keysrc}` + sous-nœud `gate/filter` |
+| Comp | `{p}/dyn` | `{on, mode, det, env, thr, ratio, knee, mgain, attack, hold, release, mix, keysrc, auto}` — ratio à crans fixes |
+| EQ | `{p}/eq` + `eq/1..4` | bande = `{type, f, g, q}` ; types `LCut/LShv/PEQ/VEQ/HShv/HCut` |
+| Headamp | `/headamp/NN` | nœud séparé = gain d'entrée — jamais touché |
+
+(`{p}` = `/ch/NN` ou `/rtn/aux`.)
+
 ### Adresses interdites
 
-Aucune adresse `/pre/trim` (gain préampli) ni `/mix/*` (fader, mute) n'est
-jamais émise par `XAirClient.push`, qui refuse explicitement ces préfixes.
-C'est la garantie anti-larsen et anti-saut de niveau.
+Aucune adresse `/headamp`, `/preamp/trim` (gain préampli) ni `/mix/*`
+(fader, mute) n'est jamais émise par `XAirClient.push`, qui refuse
+explicitement ces préfixes. La capture ignore symétriquement le champ `trim`
+du nœud preamp : c'est la garantie anti-larsen et anti-saut de niveau.
 
 ### Cas multi-canaux (variantes et paires)
 

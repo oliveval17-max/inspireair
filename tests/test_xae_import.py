@@ -52,6 +52,6 @@ def test_export_cycle() -> None:
         {"instrument": "Import", "element": "Importé", "style": "Non classé"}
     )
     assert reparsed is not None
-    assert any("/ch/03/hpf/freq" in l for l in lines)
+    assert any("/ch/03/preamp/hpf" in l for l in lines)
     gate_index = next(i for i, l in enumerate(lines) if l.startswith("/ch/03/gate/"))
-    assert gate_index > next(i for i, l in enumerate(lines) if l.startswith("/ch/03/comp/"))
+    assert gate_index > next(i for i, l in enumerate(lines) if l.startswith("/ch/03/dyn/"))

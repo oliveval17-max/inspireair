@@ -20,7 +20,10 @@ le résultat est visible en direct dans X-Air Edit.
   preset mal ciblé).
 - Le **gain de compensation du compresseur** (`mgain`) a sa propre case,
   indépendante du compresseur.
-- Le bloc **Config** (nom, couleur, icône de tranche) est opt-in, séparé du son.
+- Le **mode du gate** et sa **clé de déclenchement** (keysrc) ne sont jamais
+  écrasés : seul le profil dynamique du gate est poussé.
+- Le bloc **Config** (nom + couleur de tranche) est opt-in, séparé du son ;
+  la source d'entrée (insrc/rtnsrc) n'est jamais modifiée.
 
 ## Installation
 
@@ -93,9 +96,10 @@ Squelette initial : noyau OSC (push / capture), modèle de preset validé par
 schéma, import `.chn`, CLI. La GUI catalogue est planifiée (voir
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
 
-⚠️ Le protocole OSC X-Air est non officiel : les adresses et plages de
-paramètres sont issues de la cartographie communautaire et doivent être
-vérifiées contre votre firmware (les presets d'exemple passent `--dry-run`).
+⚠️ Le protocole OSC X-Air est non officiel : les adresses et plages suivent le
+format de référence XAirSetScene/XAirGetScene (P. Maillot / K. Mitchell) et
+une scène `.scn` authentique — un contrôle grandeur nature contre votre
+console reste recommandé (les presets d'exemple passent `--dry-run`).
 
 ## Licence
 

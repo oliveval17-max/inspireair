@@ -1,13 +1,13 @@
-"""Client OSC X-Air : push ordonné et capture (« Aspirer la tranche »).
+"""Client OSC X-Air : push ordonné et capture de tranche par nœuds.
 
 Le port OSC officieux de la famille X-Air est 10024 (UDP), sans authentification.
-La console répond à l'IP/port source de la requête : la capture utilise donc
-un unique socket brut pour émettre et recevoir.
+La console répond à l'IP/port source de la requête : la capture utilise donc un
+unique socket brut pour émettre et recevoir. Les réponses de nœud arrivent en
+liste positionnelle (décodée par oscmap.snapshot_to_preset_values).
 """
 
 from __future__ import annotations
 
-import re
 import time
 from socket import AF_INET, SO_RCVTIMEO, SOCK_DGRAM, SOL_SOCKET, socket
 from struct import pack
@@ -17,12 +17,11 @@ from pythonosc.osc_message_builder import OscMessageBuilder
 from pythonosc.osc_packet import OscPacket
 from pythonosc.udp_client import SimpleUDPClient
 
-from .oscmap import OscItem, capture_queries
+from .oscmap import OscItem, capture_nodes
 
 DEFAULT_PORT = 10024
 DEFAULT_PACING_S = 0.015
-FORBIDDEN_PREFIXES = ("/pre/", "/mix/")
-EQ_TYPES = {"PEQ", "VEQ4", "VEQ6", "HShv", "LShv", "LPF1", "HPF1"}
+FORBIDDEN_PREFIXES = ("/headamp", "/preamp/trim", "/mix/")
 
 
 class XAirError(RuntimeError):
@@ -55,21 +54,21 @@ class XAirClient:
         return len(items)
 
     def ping(self) -> bool:
-        """Teste la présence de la console (« On air ») : True si elle répond."""
+        """True si la console répond à un /info."""
         try:
-            reply = self._query("/info")
-            return reply is not None
+            self._query("/info")
+            return True
         except XAirError:
             return False
 
-    def capture(self, channel: int, queries: Optional[list[str]] = None) -> dict[str, Any]:
-        """Interroge chaque adresse du canal et retourne {adresse: valeur}."""
-        queries = queries if queries is not None else capture_queries(channel)
-        results: dict[str, Any] = {}
-        for address in queries:
-            values = self._query(address)
+    def capture(self, channel: int, nodes: Optional[list[str]] = None) -> dict[str, list[Any]]:
+        """Interroge chaque nœud du canal et retourne {nœud: [valeurs positionnelles]}."""
+        nodes = nodes if nodes is not None else capture_nodes(channel)
+        results: dict[str, list[Any]] = {}
+        for node in nodes:
+            values = self._query(node)
             if values:
-                results[address] = values[0]
+                results[node] = values
         return results
 
     def _query(self, address: str) -> list[Any]:
@@ -81,7 +80,7 @@ class XAirClient:
             sock.setsockopt(SOL_SOCKET, SO_RCVTIMEO, pack("ll", seconds, useconds))
             sock.sendto(msg, (self.host, self.port))
             try:
-                data, _ = sock.recvfrom(4096)
+                data, _ = sock.recvfrom(8192)
             except OSError:
                 raise XAirError(f"pas de réponse de la console sur {self.host}:{self.port}") from None
         finally:
@@ -90,59 +89,3 @@ class XAirClient:
         for timed_msg in OscPacket(data).messages:
             values.extend(timed_msg.message.params)
         return values
-
-
-def snapshot_to_preset_values(results: dict[str, Any], prefix: str) -> dict[str, Any]:
-    """Transforme une capture brute {adresse: valeur} en dictionnaire de preset."""
-    gate_map = {"thr": "thr", "rng": "range", "att": "attack", "hold": "hold", "rel": "release"}
-    comp_map = {
-        "thr": "thr",
-        "ratio": "ratio",
-        "att": "attack",
-        "rel": "release",
-        "knee": "knee",
-        "mgain": "mgain",
-        "wdm": "wdm",
-    }
-    preset_values: dict[str, Any] = {}
-    eq: dict[int, dict[str, Any]] = {}
-    for address, value in results.items():
-        parts = address.removeprefix(prefix).strip("/").split("/")
-        if parts[0] == "config":
-            config = preset_values.setdefault("config", {"name": "", "color": 0, "icon": 0})
-            if parts[1] == "name" and value is not None:
-                config["name"] = str(value)
-            elif parts[1] in ("color", "icon"):
-                config[parts[1]] = int(value) if value is not None else 0
-        elif parts[0] == "hpf":
-            hpf = preset_values.setdefault("hpf", {"on": False, "freq": 100.0})
-            if parts[1] == "on":
-                hpf["on"] = bool(int(value))
-            elif parts[1] == "freq":
-                hpf["freq"] = round(float(value), 2)
-        elif parts[0] == "gate":
-            gate = preset_values.setdefault("gate", {})
-            if parts[1] == "on":
-                gate["on"] = bool(int(value))
-            else:
-                gate[gate_map[parts[1]]] = round(float(value), 3)
-        elif parts[0] == "comp":
-            comp = preset_values.setdefault("comp", {})
-            if parts[1] == "on":
-                comp["on"] = bool(int(value))
-            else:
-                comp[comp_map[parts[1]]] = round(float(value), 3)
-        elif parts[0] == "eq" and len(parts) == 3:
-            band = int(re.sub(r"\D", "", parts[1]))
-            entry = eq.setdefault(band, {"band": band})
-            if parts[2] == "type" and value in EQ_TYPES:
-                entry["type"] = value
-            elif parts[2] == "freq":
-                entry["freq"] = round(float(value), 2)
-            elif parts[2] == "g":
-                entry["gain"] = round(float(value), 2)
-            elif parts[2] == "q":
-                entry["q"] = round(float(value), 2)
-    if eq:
-        preset_values["eq"] = [eq[k] for k in sorted(eq)]
-    return preset_values

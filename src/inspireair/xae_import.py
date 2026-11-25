@@ -29,7 +29,8 @@ COMP_MAP = {
     "rel": "release",
     "knee": "knee",
     "mgain": "mgain",
-    "wdm": "wdm",
+    "mix": "mix",
+    "wdm": "mix",
 }
 EQ_TYPES = {"PEQ", "VEQ4", "VEQ6", "HShv", "LShv", "LPF1", "HPF1"}
 

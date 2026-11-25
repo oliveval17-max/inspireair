@@ -13,9 +13,9 @@ import json
 import sys
 from pathlib import Path
 
-from .client import DEFAULT_PORT, XAirClient, snapshot_to_preset_values
+from .client import DEFAULT_PORT, XAirClient
 from .model import BLOCKS, Preset, PresetError
-from .oscmap import channel_prefix, preset_to_osc
+from .oscmap import channel_prefix, preset_to_osc, snapshot_to_preset_values
 from .storage import load_preset, save_preset, schema_errors
 from .xae_import import preset_to_chn_lines
 

@@ -34,9 +34,9 @@ eq:
 comp:
   "on": true
   thr: -24.0
-  ratio: 8.0
+  ratio: 7.0
   attack: 2
   release: 150
   knee: 1
   mgain: 6.0
-  wdm: 100
+  mix: 100
