@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inspireair"
+version = "0.1.0"
+description = "Bibliothèque de presets de tranches pour Behringer X-Air / XR18 — Inspirez vos mixes, expirez vos tranches."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+keywords = ["osc", "behringer", "xr18", "x-air", "presets", "audio", "mixing"]
+dependencies = [
+  "python-osc>=1.8",
+  "PyYAML>=6.0",
+  "jsonschema>=4.20",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+inspireair = "inspireair.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+inspireair = ["schema/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

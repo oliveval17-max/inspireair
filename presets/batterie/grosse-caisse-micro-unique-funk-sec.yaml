@@ -1,0 +1,42 @@
+instrument: Batterie
+element: Grosse caisse
+variant: Micro unique
+style: Funk sec
+notes: D6 ou Beta52 inséré dans l'ouverture du fût, pointé sur la peau de frappe
+  juste après la batte. HPF assez bas mais raisonné pour laisser toute la place
+  au sub basse et garder le kick sec et punchy.
+hpf:
+  "on": true
+  freq: 45
+gate:
+  "on": true
+  thr: -22.0
+  range: 30.0
+  attack: 1
+  hold: 80
+  release: 200
+eq:
+  - band: 1
+    type: PEQ
+    freq: 60
+    gain: 4.0
+    q: 1.2
+  - band: 2
+    type: PEQ
+    freq: 300
+    gain: -6.0
+    q: 2.0
+  - band: 3
+    type: PEQ
+    freq: 4000
+    gain: 3.0
+    q: 1.5
+comp:
+  "on": true
+  thr: -24.0
+  ratio: 8.0
+  attack: 2
+  release: 150
+  knee: 1
+  mgain: 6.0
+  wdm: 100

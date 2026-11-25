@@ -1,0 +1,32 @@
+instrument: Voix
+element: Lead
+tessiture: Femme
+style: Rock punchy
+notes: Condensateur ou dynamique de chant serrés, bouche à 3-5 cm. Compte tenu de
+  la tessiture féminine (fondamentale vers 165-255 Hz), HPF un peu plus haut que
+  pour une voix homme ; présence centrée vers 2-4 kHz.
+hpf:
+  "on": true
+  freq: 120
+gate:
+  "on": false
+eq:
+  - band: 1
+    type: PEQ
+    freq: 250
+    gain: -2.0
+    q: 2.5
+  - band: 2
+    type: PEQ
+    freq: 3000
+    gain: 2.5
+    q: 1.2
+comp:
+  "on": true
+  thr: -18.0
+  ratio: 3.0
+  attack: 25
+  release: 200
+  knee: 2
+  mgain: 2.0
+  wdm: 100

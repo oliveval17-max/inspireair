@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/oliveval17-max/inspireair/schema/inspireair-preset.schema.json",
+  "title": "InspireAir preset",
+  "description": "Preset de tranche de console X-Air (Répondeur à inspireair validate).",
+  "type": "object",
+  "required": ["instrument", "element", "style"],
+  "additionalProperties": false,
+  "properties": {
+    "instrument": { "type": "string", "minLength": 1 },
+    "element": { "type": "string", "minLength": 1 },
+    "style": { "type": "string", "minLength": 1 },
+    "variant": { "type": "string", "minLength": 1 },
+    "tessiture": { "enum": ["Homme", "Femme"] },
+    "notes": { "type": "string" },
+    "author": { "type": "string" },
+    "version": { "type": "string" },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "maxLength": 12 },
+        "color": { "type": "integer", "minimum": 0, "maximum": 15 },
+        "icon": { "type": "integer", "minimum": 0, "maximum": 73 }
+      }
+    },
+    "hpf": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "on": { "type": "boolean" },
+        "freq": { "type": "number", "minimum": 20, "maximum": 400 }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "on": { "type": "boolean" },
+        "thr": { "type": "number", "minimum": -80, "maximum": 0 },
+        "range": { "type": "number", "minimum": 0, "maximum": 140 },
+        "attack": { "type": "number", "minimum": 0, "maximum": 2000 },
+        "hold": { "type": "number", "minimum": 0, "maximum": 2000 },
+        "release": { "type": "number", "minimum": 0, "maximum": 5000 }
+      }
+    },
+    "eq": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["band", "type", "freq", "gain", "q"],
+        "properties": {
+          "band": { "type": "integer", "minimum": 1, "maximum": 4 },
+          "type": { "enum": ["PEQ", "VEQ4", "VEQ6", "HShv", "LShv", "LPF1", "HPF1"] },
+          "freq": { "type": "number", "minimum": 20, "maximum": 20000 },
+          "gain": { "type": "number", "minimum": -15, "maximum": 15 },
+          "q": { "type": "number", "minimum": 0.1, "maximum": 10 }
+        }
+      }
+    },
+    "comp": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "on": { "type": "boolean" },
+        "thr": { "type": "number", "minimum": -80, "maximum": 0 },
+        "ratio": { "type": "number", "minimum": 1, "maximum": 32 },
+        "attack": { "type": "number", "minimum": 0, "maximum": 500 },
+        "release": { "type": "number", "minimum": 2, "maximum": 5000 },
+        "knee": { "type": "number", "minimum": 0, "maximum": 5 },
+        "mgain": { "type": "number", "minimum": -24, "maximum": 24 },
+        "wdm": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  }
+}

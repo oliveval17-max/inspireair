@@ -1,0 +1,46 @@
+instrument: Batterie
+element: Caisse claire
+variant: Top
+style: Rock punchy
+notes: Attaque marquée à 3-4 kHz, corps à 200 Hz, gate rapide pour couper le charley.
+  SM57 à 3 cm du bord, peau sablée, pointée entre la charley et les toms.
+hpf:
+  "on":  true
+  freq: 100
+gate:
+  "on":  true
+  thr: -28.0
+  range: 18.0
+  attack: 1
+  hold: 15
+  release: 120
+eq:
+  - band: 1
+    type: PEQ
+    freq: 200
+    gain: 3.5
+    q: 2.0
+  - band: 2
+    type: PEQ
+    freq: 450
+    gain: -4.0
+    q: 3.0
+  - band: 3
+    type: PEQ
+    freq: 3500
+    gain: 4.0
+    q: 1.8
+  - band: 4
+    type: HShv
+    freq: 8000
+    gain: 2.5
+    q: 1.0
+comp:
+  "on":  true
+  thr: -16.0
+  ratio: 4.0
+  attack: 12
+  release: 90
+  knee: 2
+  mgain: 3.0
+  wdm: 100
