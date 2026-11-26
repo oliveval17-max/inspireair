@@ -1,0 +1,45 @@
+instrument: Batterie
+element: Overhead
+variant: Paire A-B
+style: Rock punchy
+notes: >-
+  Standard paire d'overheads (condensateurs cardioïdes, type Rode M3),
+  montage A-B : deux micros espacés, chacun équidistant du centre de la
+  caisse claire, pour une image stéréo stable. PAS DE GATE ici : les
+  overheads portent l'ambiance du kit, un gate les détruirait. HPF à
+  150 Hz (la grosse caisse a son propre micro). EQ : on retire un peu de
+  "boîte" à 500 Hz, une pointe de définition à 4 kHz, de l'air au-delà
+  de 12 kHz. Compresseur très doux (2:1) juste pour tenir l'ensemble.
+  À appliquer sur les DEUX canaux (kit : canaux OH gauche et droit).
+config:
+  name: "OH G/D"
+  color: 3
+hpf:
+  "on": true
+  freq: 150
+eq:
+  - band: 1
+    type: PEQ
+    freq: 500
+    gain: -3.0
+    q: 1.6
+  - band: 2
+    type: PEQ
+    freq: 4000
+    gain: 1.5
+    q: 1.2
+  - band: 3
+    type: HShv
+    freq: 12000
+    gain: 3.0
+    q: 0.7
+comp:
+  "on": true
+  thr: -18.0
+  ratio: 2.0
+  attack: 15
+  hold: 10
+  release: 250
+  knee: 3
+  mgain: 3.0
+  mix: 100

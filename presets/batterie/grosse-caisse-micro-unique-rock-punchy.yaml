@@ -1,0 +1,57 @@
+instrument: Batterie
+element: Grosse caisse
+variant: Micro unique
+style: Rock punchy
+notes: >-
+  Standard grosse caisse 22" avec event, micro type bass drum (EV PL33 ou
+  équivalent) placé dans l'event, pointé vers le centre de la peau battue.
+  Peau frappée Evans EMAD2.
+  HPF à 30 Hz pour garder les sub-basses sans le rumble de scène. Le gate
+  (seuil -42 dB, portée 55 dB) coupe les fuites de caisse claire entre les
+  coups. EQ : punch à 55 Hz, on retire le "boom" de carton vers 350 Hz, et
+  on remonte le claquement de batte vers 3,2 kHz. Le compresseur (4:1,
+  attaque lente) laisse la transitoire passer puis tient le bas.
+config:
+  name: "Kick 22"
+  color: 4
+hpf:
+  "on": true
+  freq: 30
+gate:
+  "on": true
+  thr: -42.0
+  range: 55.0
+  attack: 2
+  hold: 60
+  release: 150
+eq:
+  - band: 1
+    type: PEQ
+    freq: 55
+    gain: 4.0
+    q: 2.0
+  - band: 2
+    type: PEQ
+    freq: 350
+    gain: -5.0
+    q: 1.6
+  - band: 3
+    type: PEQ
+    freq: 3200
+    gain: 4.0
+    q: 1.2
+  - band: 4
+    type: HShv
+    freq: 10000
+    gain: 2.0
+    q: 0.7
+comp:
+  "on": true
+  thr: -25.0
+  ratio: 4.0
+  attack: 15
+  hold: 10
+  release: 120
+  knee: 3
+  mgain: 6.0
+  mix: 100

@@ -1,0 +1,50 @@
+instrument: Batterie
+element: Tom alto 12
+style: Rock punchy
+notes: >-
+  Standard tom 12", micro dynamique type cardioïde (T-Bone CD55 ou
+  équivalent), pointé vers le centre de la peau, 30° d'angle. Peau Evans G2 blanche. HPF à 80 Hz
+  (en dessous, il n'y a plus rien de musical sur un 12"). Gate serré :
+  seuil -45 dB, portée 50 dB, il ne laisse passer que la frappe. EQ :
+  corps à 120 Hz, on retire le "carton" vers 420 Hz, un peu d'air au-delà
+  de 7 kHz. Compresseur 3:1 à attaque moyenne, pour tenir la note sans
+  écraser la frappe.
+config:
+  name: "Tom 12"
+  color: 6
+hpf:
+  "on": true
+  freq: 80
+gate:
+  "on": true
+  thr: -45.0
+  range: 50.0
+  attack: 1
+  hold: 80
+  release: 250
+eq:
+  - band: 1
+    type: PEQ
+    freq: 120
+    gain: 4.0
+    q: 1.8
+  - band: 2
+    type: PEQ
+    freq: 420
+    gain: -4.0
+    q: 1.8
+  - band: 3
+    type: HShv
+    freq: 7000
+    gain: 2.0
+    q: 0.8
+comp:
+  "on": true
+  thr: -20.0
+  ratio: 3.0
+  attack: 10
+  hold: 10
+  release: 200
+  knee: 2
+  mgain: 5.0
+  mix: 100

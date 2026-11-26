@@ -2,8 +2,13 @@ instrument: Batterie
 element: Caisse claire
 variant: Top
 style: Rock punchy
-notes: Attaque marquée à 3-4 kHz, corps à 200 Hz, gate rapide pour couper le charley.
-  SM57 à 3 cm du bord, peau sablée, pointée entre la charley et les toms.
+notes: >-
+  Standard caisse claire, micro dynamique SM57 (ou équivalent) à 3 cm du bord,
+  pointé vers le centre de la peau, 20° d'angle, entre la charley et les toms.
+  Référence terrain : caisse claire artisanale 13"x6" (Crash Custom Drums),
+  peau frappée Remo Powerstroke clear. Attaque marquée à 3-4 kHz, corps à 200 Hz, gate rapide
+  pour couper le charley. Pour un son plus large : variante Top+Bottom avec
+  un second SM57 sous la caisse, polarité inversée à vérifier à l'oreille.
 hpf:
   "on":  true
   freq: 100

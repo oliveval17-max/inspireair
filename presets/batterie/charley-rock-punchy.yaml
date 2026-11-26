@@ -1,0 +1,50 @@
+instrument: Batterie
+element: Charley
+style: Rock punchy
+notes: >-
+  Standard charley, micro condensateur cardioïde (type T-Bone SC1000 /
+  Rode M3) pointé sur la cymbale supérieure, environ 30° hors axe pour
+  éviter la surcharge d'air. HPF à 200 Hz : il coupe la grosse caisse et
+  les toms qui fuient dedans. EQ : on retire le "boîte en carton" vers
+  400 Hz, on remonte le tic-tac vers 2,5 kHz et le souffle métallique
+  au-delà de 8 kHz. Compresseur doux (2,5:1) pour lisser les ouvertures.
+  Le gate est volontairement modéré : trop brutal, il mange le swing.
+config:
+  name: "HiHat"
+  color: 4
+hpf:
+  "on": true
+  freq: 200
+gate:
+  "on": true
+  thr: -58.0
+  range: 45.0
+  attack: 0
+  hold: 30
+  release: 90
+eq:
+  - band: 1
+    type: PEQ
+    freq: 400
+    gain: -4.0
+    q: 1.5
+  - band: 2
+    type: PEQ
+    freq: 2500
+    gain: 2.0
+    q: 1.4
+  - band: 3
+    type: HShv
+    freq: 8000
+    gain: 3.0
+    q: 0.8
+comp:
+  "on": true
+  thr: -30.0
+  ratio: 2.5
+  attack: 5
+  hold: 10
+  release: 100
+  knee: 2
+  mgain: 4.0
+  mix: 100

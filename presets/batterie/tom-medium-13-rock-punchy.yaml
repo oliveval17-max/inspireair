@@ -1,0 +1,48 @@
+instrument: Batterie
+element: Tom médium 13
+style: Rock punchy
+notes: >-
+  Standard tom 13", micro dynamique type cardioïde (T-Bone CD55 ou
+  équivalent), pointé vers le centre de la peau, 30° d'angle. Peau Evans G2 blanche. Même logique
+  que le tom 12 avec tout décalé vers le bas : HPF 70 Hz, corps à 100 Hz,
+  creux de "carton" à 450 Hz. Gate un peu plus patient (release 300 ms) :
+  un tom médium résonne plus longtemps qu'un alto.
+config:
+  name: "Tom 13"
+  color: 6
+hpf:
+  "on": true
+  freq: 70
+gate:
+  "on": true
+  thr: -45.0
+  range: 50.0
+  attack: 1
+  hold: 100
+  release: 300
+eq:
+  - band: 1
+    type: PEQ
+    freq: 100
+    gain: 4.0
+    q: 1.8
+  - band: 2
+    type: PEQ
+    freq: 450
+    gain: -4.0
+    q: 1.8
+  - band: 3
+    type: HShv
+    freq: 6500
+    gain: 2.0
+    q: 0.8
+comp:
+  "on": true
+  thr: -20.0
+  ratio: 3.0
+  attack: 10
+  hold: 10
+  release: 250
+  knee: 2
+  mgain: 5.0
+  mix: 100

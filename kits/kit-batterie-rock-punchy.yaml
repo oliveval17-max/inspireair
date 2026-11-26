@@ -1,0 +1,27 @@
+name: Kit batterie Rock punchy 9 micros
+notes: >-
+  Kit complet de référence (style Rock punchy) pour une batterie 22"/13"/16"
+  repiquée sur 9 canaux. Paire d'overheads A-B (Rode M3) : le même preset
+  est appliqué aux deux canaux, équidistants du centre de la caisse claire.
+  Chaque canal est sauvegardé (undo) avant son push : inspireair undo
+  --channel N pour revenir en arrière. Ajustez les faders et le gain
+  d'entrée à la main : InspireAir ne les touche jamais.
+entries:
+  - channel: 1
+    preset: ../presets/batterie/grosse-caisse-micro-unique-rock-punchy.yaml
+  - channel: 2
+    preset: ../presets/batterie/caisse-claire-top-rock-punchy.yaml
+  - channel: 3
+    preset: ../presets/batterie/charley-rock-punchy.yaml
+  - channel: 4
+    preset: ../presets/batterie/tom-alto-12-rock-punchy.yaml
+  - channel: 5
+    preset: ../presets/batterie/tom-medium-13-rock-punchy.yaml
+  - channel: 6
+    preset: ../presets/batterie/tom-basse-14-16-rock-punchy.yaml
+  - channel: 7
+    preset: ../presets/batterie/tom-basse-14-16-rock-punchy.yaml
+  - channel: 8
+    preset: ../presets/batterie/overhead-paire-ab-rock-punchy.yaml
+  - channel: 9
+    preset: ../presets/batterie/overhead-paire-ab-rock-punchy.yaml
