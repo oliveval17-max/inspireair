@@ -124,8 +124,12 @@ réelle. La liste des ratios est 0-based (wire 7 = 5.0), confirmé par
 
 ## Limitations connues du squelette
 
-- Les scènes `.scn` agrégées (plusieurs valeurs par nœud sur une ligne) ne
-  sont pas encore parsées : l'import gère le format une-valeur-par-ligne.
+- L'import gère les trois formes vérifiées (strip agrégé sans préfixe de
+  canal, scène agrégée /ch/NN, feuille une-valeur-par-ligne) et la notation
+  k des fréquences (« 4k52 » = 4520 Hz). À l'export `.chn`, la ligne
+  /preamp (HPF + trim) est omise pour ne jamais exporter le gain d'entrée.
+- Les side-chains (/gate/filter, /dyn/filter) ne sont ni importés ni
+  exportés (hors modèle de preset, v1).
 - Adresses OSC à re-vérifier empiriquement contre le firmware de la console
   (protocole non officiel ; cartographie communautaire de référence).
 - Le mode « Kit complet » (de nombreuses tranches en un envoi) attend

@@ -60,7 +60,10 @@ inspireair kit kits/exemple-kit-batterie.yaml --host 192.168.1.100
   tolérance d'un demi-cran console (pas de différences fantômes).
 - `kit` : applique un kit multi-canaux (fichier `kits/*.yaml`, entrées
   canal → preset) avec snapshot undo par canal.
-- `import` : convertit un fichier `.chn` / `.scn` de X-Air Edit en preset.
+- `import` : convertit un fichier `.chn` / `.scn` de X-Air Edit en preset
+  (formes strip agrégée et scène supportées, notation k « 4k52 » = 4520 Hz ;
+  trim et fader jamais importés, ligne `/preamp` omise à l'export pour ne
+  jamais exporter le gain d'entrée).
 
 ## Modèle de données
 
