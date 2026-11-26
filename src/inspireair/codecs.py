@@ -21,7 +21,7 @@ from __future__ import annotations
 import math
 from typing import Callable, Union
 
-from .model import COMP_RATIOS, EQ_TYPES, EQ_TYPE_ALIASES
+from .model import COMP_RATIOS, EQ_TYPES, EQ_TYPE_ALIASES, PresetError
 
 CodecValue = Union[float, int, str]
 
@@ -32,6 +32,7 @@ LN_RELEASE = 6.684611727667927       # ln(4000/5)
 LN_Q = -3.506557897319982            # ln(0.3/10)
 
 _EQ_TYPE_ALIASES_UPPER = {k.upper(): v for k, v in EQ_TYPE_ALIASES.items()}
+_EQ_TYPE_LOOKUP = {t.upper(): t for t in EQ_TYPES}
 
 
 def _clamp01(x: float) -> float:
@@ -76,10 +77,10 @@ def _ratio_decode(wire: float) -> float:
 def _eq_type_encode(value: CodecValue) -> int:
     name = str(value).strip().upper()
     name = _EQ_TYPE_ALIASES_UPPER.get(name, name)
-    try:
-        return EQ_TYPES.index(name)
-    except ValueError:
-        raise ValueError(f"type EQ inconnu : {value!r} (attendus : {EQ_TYPES})") from None
+    canonical = _EQ_TYPE_LOOKUP.get(name)
+    if canonical is None:
+        raise PresetError(f"type EQ inconnu : {value!r} (attendus : {EQ_TYPES})")
+    return EQ_TYPES.index(canonical)
 
 
 def _eq_type_decode(wire: float) -> str:

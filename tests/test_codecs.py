@@ -82,3 +82,12 @@ def test_preset_to_osc_emits_wire_values() -> None:
     assert items["/ch/03/dyn/mix"] == pytest.approx(0.3)
     assert items["/ch/03/gate/thr"] == pytest.approx(0.65)
     assert items["/ch/03/gate/release"] == pytest.approx(0.48)
+
+
+def test_eq_type_is_case_insensitive() -> None:
+    assert encode_value("eq", "type", "HShv") == 4
+    assert encode_value("eq", "type", "hshv") == 4
+    assert encode_value("eq", "type", "LCut") == 0
+    assert encode_value("eq", "type", "VEQ4") == 3
+    with pytest.raises(Exception, match="type EQ inconnu"):
+        encode_value("eq", "type", "Bogus")

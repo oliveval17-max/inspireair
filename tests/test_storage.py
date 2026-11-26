@@ -42,3 +42,19 @@ def test_schema_rejects_bad_type(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert schema_errors(bad)
+
+
+def test_schema_accepts_grab_nulls() -> None:
+    data = {
+        "instrument": "Capture",
+        "element": "Canal 1",
+        "style": "Balance capturée",
+        "variant": None,
+        "tessiture": None,
+        "notes": "Capturée depuis la console",
+        "author": None,
+        "version": "1",
+        "config": {"name": "Overhd G", "color": 4},
+        "hpf": {"on": True, "freq": 233.3},
+    }
+    assert schema_errors("<grab>", data) == []
