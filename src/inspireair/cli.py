@@ -1,8 +1,9 @@
-"""CLI InspireAir : show, validate, push, grab, import, export.
+"""CLI InspireAir : show, validate, push, grab, import, export, undo, compare, kit.
 
 Sécurités actives dans toutes les commandes de push :
 - headamp (trim d'entrée) et fader jamais envoyés ;
 - gate toujours en dernier ;
+- état du canal sauvegardé avant chaque envoi (undo) ;
 - `--dry-run` pour prévisualiser sans émettre.
 """
 
@@ -13,9 +14,11 @@ import json
 import sys
 from pathlib import Path
 
-from .client import DEFAULT_PORT, XAirClient
+from .client import DEFAULT_PORT, XAirClient, XAirError
+from .kit import load_kit
 from .model import BLOCKS, Preset, PresetError
 from .oscmap import channel_prefix, preset_to_osc, snapshot_to_preset_values
+from .snapshot import capture_snapshot, compare_preset, restore_items, undo_path
 from .storage import load_preset, save_preset, schema_errors
 from .xae_import import preset_to_chn_lines
 
@@ -75,6 +78,13 @@ def cmd_push(args: argparse.Namespace) -> int:
     if not args.assume_on and not client.ping():
         print(f"La console {args.host} ne répond pas (ping /info).", file=sys.stderr)
         return 1
+    if not args.no_undo:
+        try:
+            undo_file = capture_snapshot(client, args.channel)
+        except XAirError as exc:
+            print(f"Capture du snapshot undo impossible ({exc}) — push annulé par sécurité.", file=sys.stderr)
+            return 1
+        print(f"Undo sauvegardé : {undo_file}")
     count = client.push(items)
     print(f"{count} messages envoyés vers {args.host} (canal {args.channel}).")
     if "gate" in (blocks or preset.blocks()):
@@ -89,15 +99,79 @@ def cmd_grab(args: argparse.Namespace) -> int:
     values = snapshot_to_preset_values(results, prefix)
     preset = Preset.from_dict(
         {
-            "instrument": "Capture",
-            "element": f"Canal {args.channel}",
-            "style": "Balance capturée",
+            "instrument": args.instrument,
+            "element": args.element or f"Canal {args.channel}",
+            "style": args.style,
+            "variant": args.variant,
+            "tessiture": args.tessiture,
             "notes": args.notes,
             **values,
         }
     ).validated()
     out = save_preset(preset, args.output, fmt=args.fmt)
     print(f"Tranche du canal {args.channel} aspirée → {out}")
+    return 0
+
+
+def cmd_undo(args: argparse.Namespace) -> int:
+    path = undo_path(args.channel)
+    if not path.exists():
+        print(f"Aucun snapshot undo pour le canal {args.channel} ({path}).", file=sys.stderr)
+        return 1
+    items = restore_items(path, args.channel)
+    if args.dry_run:
+        print(f"[dry-run] {len(items)} messages pour restaurer le canal {args.channel} :")
+        for address, value in items:
+            print(f"{SEPARATION}{address} {value}")
+        return 0
+    client = XAirClient(args.host, port=args.port)
+    if not args.assume_on and not client.ping():
+        print(f"La console {args.host} ne répond pas (ping /info).", file=sys.stderr)
+        return 1
+    count = client.push(items)
+    print(f"Canal {args.channel} restauré depuis {path} ({count} messages).")
+    return 0
+
+
+def cmd_compare(args: argparse.Namespace) -> int:
+    preset = load_preset(args.path)
+    client = XAirClient(args.host, port=args.port)
+    if not args.assume_on and not client.ping():
+        print(f"La console {args.host} ne répond pas (ping /info).", file=sys.stderr)
+        return 1
+    replies = client.capture(args.channel)
+    diffs = compare_preset(preset, replies, args.channel, _parse_blocks(args.blocks))
+    if not diffs:
+        print(f"Canal {args.channel} conforme à {args.path} (tolérance : demi-cran console).")
+        return 0
+    print(f"Canal {args.channel} ≠ {args.path} ({len(diffs)} écart(s) au-delà d'un demi-cran) :")
+    for diff in diffs:
+        print(f"{SEPARATION}{diff}")
+    return 1
+
+
+def cmd_kit(args: argparse.Namespace) -> int:
+    plan = load_kit(Path(args.path))
+    blocks = _parse_blocks(args.blocks)
+    if args.dry_run:
+        total = 0
+        for channel, preset in plan:
+            count = len(preset_to_osc(preset, channel, blocks))
+            total += count
+            print(f"[dry-run] canal {channel} ← {preset.instrument}/{preset.element} ({count} messages)")
+        print(f"[dry-run] {len(plan)} canaux, {total} messages vers {args.host}.")
+        return 0
+    client = XAirClient(args.host, port=args.port)
+    if not args.assume_on and not client.ping():
+        print(f"La console {args.host} ne répond pas (ping /info).", file=sys.stderr)
+        return 1
+    total = 0
+    for channel, preset in plan:
+        undo_file = capture_snapshot(client, channel)
+        count = client.push(preset_to_osc(preset, channel, blocks))
+        total += count
+        print(f"canal {channel} ← {preset.instrument}/{preset.element} : {count} messages (undo : {undo_file})")
+    print(f"Kit complet : {total} messages sur {len(plan)} canaux.")
     return 0
 
 
@@ -144,6 +218,7 @@ def build_parser() -> argparse.ArgumentParser:
     push.add_argument("--blocks", help="ex. hpf,eq,comp (défaut : tous les blocs du preset)")
     push.add_argument("--dry-run", action="store_true", help="prévisualise sans envoyer")
     push.add_argument("--assume-on", action="store_true", help="ne teste pas la console avec /info avant l'envoi")
+    push.add_argument("--no-undo", action="store_true", help="ne sauvegarde pas l'état du canal avant l'envoi (déconseillé)")
     push.set_defaults(func=cmd_push)
 
     grab = sub.add_parser("grab", help="aspire la tranche courante du canal")
@@ -153,7 +228,38 @@ def build_parser() -> argparse.ArgumentParser:
     grab.add_argument("-o", "--output", required=True)
     grab.add_argument("--fmt", choices=("yaml", "json"), default="yaml")
     grab.add_argument("--notes", default="Capturée depuis la console")
+    grab.add_argument("--instrument", default="Capture", help="section taxonomie (ex. Batterie)")
+    grab.add_argument("--element", default=None, help="élément (défaut : Canal N)")
+    grab.add_argument("--style", default="Balance capturée", help="caractère (ex. Funk sec)")
+    grab.add_argument("--variant", default=None, help="variante (ex. Top, Top+Bottom)")
+    grab.add_argument("--tessiture", default=None, choices=("Homme", "Femme"))
     grab.set_defaults(func=cmd_grab)
+
+    und = sub.add_parser("undo", help="restaure l'état du canal sauvegardé avant le dernier push")
+    und.add_argument("--host", required=True)
+    und.add_argument("--port", type=int, default=DEFAULT_PORT)
+    und.add_argument("--channel", type=int, required=True)
+    und.add_argument("--dry-run", action="store_true")
+    und.add_argument("--assume-on", action="store_true")
+    und.set_defaults(func=cmd_undo)
+
+    cmp = sub.add_parser("compare", help="compare un preset à l'état réel du canal")
+    cmp.add_argument("path")
+    cmp.add_argument("--host", required=True)
+    cmp.add_argument("--port", type=int, default=DEFAULT_PORT)
+    cmp.add_argument("--channel", type=int, required=True)
+    cmp.add_argument("--blocks")
+    cmp.add_argument("--assume-on", action="store_true")
+    cmp.set_defaults(func=cmd_compare)
+
+    kit = sub.add_parser("kit", help="applique un kit multi-canaux (undo par canal)")
+    kit.add_argument("path", help="fichier kit (clée 'entries')")
+    kit.add_argument("--host", required=True)
+    kit.add_argument("--port", type=int, default=DEFAULT_PORT)
+    kit.add_argument("--blocks")
+    kit.add_argument("--dry-run", action="store_true")
+    kit.add_argument("--assume-on", action="store_true")
+    kit.set_defaults(func=cmd_kit)
 
     imp = sub.add_parser("import", help="convertit un .chn / .scn X-Air Edit en preset")
     imp.add_argument("path")
@@ -180,8 +286,11 @@ def main(argv: list[str] | None = None) -> int:
     except PresetError as exc:
         print(f"Preset invalide : {exc}", file=sys.stderr)
         return 1
-    except json.JSONDecodeError as exc:
-        print(f"JSON invalide : {exc}", file=sys.stderr)
+    except XAirError as exc:
+        print(f"Erreur console : {exc}", file=sys.stderr)
+        return 1
+    except (json.JSONDecodeError, ValueError) as exc:
+        print(f"Fichier illisible : {exc}", file=sys.stderr)
         return 1
 
 

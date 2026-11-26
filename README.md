@@ -39,14 +39,27 @@ inspireair show presets/batterie/grosse-caisse-micro-unique/funk-sec.yaml
 inspireair validate presets/voix/lead-femme-rock-punchy.yaml
 inspireair push presets/batterie/caisse-claire-top-rock-punchy.yaml \
     --host 192.168.1.100 --channel 2 --blocks hpf,eq,comp,gate
-inspireair grab --host 192.168.1.100 --channel 2 -o ma-balance.yaml
+inspireair grab --host 192.168.1.100 --channel 2 -o ma-balance.yaml \
+    --instrument Batterie --element "Caisse claire" --style "Rock punchy"
 inspireair import scene.xchn -o scene-importee.yaml
+inspireair undo --host 192.168.1.100 --channel 2
+inspireair compare presets/batterie/caisse-claire-top-rock-punchy.yaml \
+    --host 192.168.1.100 --channel 2
+inspireair kit kits/exemple-kit-batterie.yaml --host 192.168.1.100
 ```
 
 - `push` : applique un preset sur un canal (ordre d'envoi garanti :
   Config → HPF → EQ → Comp → Gate, avec `--dry-run` pour prévisualiser).
+  L'état courant du canal est sauvegardé avant chaque envoi (voir `undo`),
+  sauf avec `--no-undo`.
 - `grab` : la fonction « Aspirer la tranche » — lit les paramètres OSC du canal
-  et les sauvegarde dans la bibliothèque.
+  et les sauvegarde dans la bibliothèque, avec taxonomie en option
+  (`--instrument`, `--element`, `--style`, `--variant`, `--tessiture`).
+- `undo` : restaure l'état du canal mémorisé avant le dernier push.
+- `compare` : explique les écarts entre un preset et l'état réel du canal,
+  tolérance d'un demi-cran console (pas de différences fantômes).
+- `kit` : applique un kit multi-canaux (fichier `kits/*.yaml`, entrées
+  canal → preset) avec snapshot undo par canal.
 - `import` : convertit un fichier `.chn` / `.scn` de X-Air Edit en preset.
 
 ## Modèle de données
@@ -92,9 +105,11 @@ pytest
 
 ## État du projet
 
-Squelette initial : noyau OSC (push / capture), modèle de preset validé par
-schéma, import `.chn`, CLI. La GUI catalogue est planifiée (voir
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+Noyau OSC certifié sur console (push et capture, format filaire 0..1
+documenté dans [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)), modèle de
+preset validé par schéma, import `.chn`, CLI complet (push avec undo,
+grab taxonomisé, compare, kit multi-canaux). La GUI catalogue est
+planifiée.
 
 ⚠️ Le protocole OSC X-Air est non officiel : les adresses et plages suivent le
 format de référence XAirSetScene/XAirGetScene (P. Maillot / K. Mitchell) et

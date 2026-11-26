@@ -103,6 +103,19 @@ comportement que la console) ; au grab, `decode_value` restitue la grandeur
 réelle. La liste des ratios est 0-based (wire 7 = 5.0), confirmé par
 `Xp_list` dans Xscene2X.c.
 
+### Annuler / Comparer / Kit complet
+
+- Chaque `push` (et chaque canal d'un `kit`) capture d'abord l'état courant
+  du canal et l'écrit dans `~/.inspireair/snapshots/undo-chNN.yaml`
+  (`--no-undo` pour désactiver, déconseillé en live). `undo` rejoue ce
+  snapshot via le même chemin de push (mêmes garde-fous).
+- `compare` compare ce que le preset enverrait à l'état capturé, **en
+  valeurs filaires avec une tolérance d'un demi-cran** (`codecs.wire_epsilon`,
+  base `WIRE_STEPS`) : en dessous, c'est de la quantisation console, pas un
+  écart réel — pas de différences fantômes.
+- `kit` : fichier YAML `kits/*.yaml` à clée `entries` (liste canal → preset,
+  chemins relatifs au kit) ; undo par canal avant chaque push.
+
 ## Facettes vs arborescence
 
 - **Arborescence** (sections et éléments) : ce que l'utilisateur parcourt.

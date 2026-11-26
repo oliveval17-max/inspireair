@@ -1,0 +1,10 @@
+name: Exemple kit batterie
+notes: >
+  Exemple de fichier kit : chaque entrée applique un preset à un canal.
+  Chemins relatifs à ce fichier. Avant chaque canal, l'état courant est
+  sauvegardé (undo) : inspireair undo --channel N pour revenir en arrière.
+entries:
+  - channel: 1
+    preset: ../presets/batterie/grosse-caisse-micro-unique-funk-sec.yaml
+  - channel: 2
+    preset: ../presets/batterie/caisse-claire-top-rock-punchy.yaml

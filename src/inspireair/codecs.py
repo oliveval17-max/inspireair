@@ -174,6 +174,33 @@ CODECS: dict[tuple[str, str], tuple[Callable[[CodecValue], CodecValue], Callable
 }
 
 
+# Nombre de crans filaires par paramètre (base des tolérances de comparaison).
+WIRE_STEPS: dict[tuple[str, str], float] = {
+    ("preamp", "hpf"): 100,
+    ("gate", "thr"): 160,
+    ("gate", "range"): 57,
+    ("gate", "attack"): 120,
+    ("gate", "hold"): 100,
+    ("gate", "release"): 100,
+    ("dyn", "thr"): 120,
+    ("dyn", "ratio"): 12,
+    ("dyn", "knee"): 5,
+    ("dyn", "mgain"): 48,
+    ("dyn", "attack"): 120,
+    ("dyn", "hold"): 100,
+    ("dyn", "release"): 100,
+    ("eq", "f"): 200,
+    ("eq", "g"): 120,
+    ("eq", "q"): 71,
+}
+
+
+def wire_epsilon(node: str, field: str) -> float:
+    """Tolérance de comparaison filaire = un peu plus d'un demi-cran."""
+    steps = WIRE_STEPS.get((node, field))
+    return 0.6 / steps if steps else 0.01
+
+
 def encode_value(node: str, field: str, value: CodecValue) -> CodecValue:
     """Grandeur réelle -> valeur filaire normalisée (push)."""
     codec = CODECS.get((node, field))
