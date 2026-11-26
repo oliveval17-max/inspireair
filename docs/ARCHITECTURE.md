@@ -74,6 +74,35 @@ La XR18 arrondit fréquences, Q et temps à sa grille interne : tout
 comparateur (undo / comparer) doit tolérer des petits écarts (epsilon),
 sinon des différences fantômes apparaissent après capture.
 
+### Format filaire normalisé (certifié)
+
+Sur OSC, la console transmet des valeurs normalisées 0..1 quantifiées.
+Formules certifiées depuis Xscene2X.c (P. Maillot) et un dump réel
+(XR18 fw 1.19), implémentées dans `codecs.py` :
+
+| Paramètre | Formule (filaire -> réel) | Crans |
+| --- | --- | --- |
+| `preamp/hpf` | f = 20·e^(2.9957·x) (20–400 Hz) | 100 |
+| `gate/thr` | −80 + 80·x dB (pas 0,5) | 160 |
+| `gate/range` | 3 + 57·x dB (pas 1) | 57 |
+| `gate, dyn/attack` | 120·x ms (pas 1) | 120 |
+| `gate, dyn/hold` | 0,02·e^(11.5129·x) ms (0,02–2000) | 100 |
+| `gate, dyn/release` | 5·e^(6.6846·x) ms (5–4000) | 100 |
+| `dyn/thr` | −60 + 60·x dB (pas 0,5) | 120 |
+| `dyn/ratio` | index **0-based** dans la liste des crans | 12 |
+| `dyn/knee` | 5·x (pas 1) | 5 |
+| `dyn/mgain` | 24·x dB (pas 0,5) | 48 |
+| `dyn/mix` | 100·x % (`Xp_percent`) | — |
+| `eq/f` | f = 20·1000^x Hz (20–20000, `Xp_frequency`) | 200 |
+| `eq/g` | −15 + 30·x dB (pas 0,25) | 120 |
+| `eq/q` | Q = 10·e^(−3.5066·x) (0,3–10) | 71 |
+| `eq/N/type` | index 0-based dans LCut/LShv/PEQ/VEQ/HShv/HCut | 6 |
+
+Au push, `codecs.encode_value` quantifie au cran le plus proche (même
+comportement que la console) ; au grab, `decode_value` restitue la grandeur
+réelle. La liste des ratios est 0-based (wire 7 = 5.0), confirmé par
+`Xp_list` dans Xscene2X.c.
+
 ## Facettes vs arborescence
 
 - **Arborescence** (sections et éléments) : ce que l'utilisateur parcourt.

@@ -26,6 +26,7 @@ COMP_MAP = {
     "thr": "thr",
     "ratio": "ratio",
     "att": "attack",
+    "hold": "hold",
     "rel": "release",
     "knee": "knee",
     "mgain": "mgain",

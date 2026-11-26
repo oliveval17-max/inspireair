@@ -73,22 +73,44 @@ def test_gate_sent_last_and_headamp_excluded() -> None:
 
 
 def test_snapshot_decode_ignores_trim_and_sources() -> None:
+    """Dump réel canal 1 (scène FMR, XR18 fw 1.19) : valeurs filaires 0..1."""
+    import pytest
+
     from inspireair.oscmap import snapshot_to_preset_values
 
     replies = {
-        "/ch/03/config": ['"Slap Top"', 9, "In03", "U03"],
-        "/ch/03/preamp": [-12.0, "OFF", "ON", "ON", 110.0],
-        "/ch/03/gate": ["ON", "GATE", -30.0, 60.0, 1, 502.0, 983.0, "SELF"],
-        "/ch/03/dyn": ["OFF", "COMP", "PEAK", "LOG", -25.5, "3.0", 2, 6.0, 10, 10.0, 151.0, 100.0, "SELF", "OFF"],
-        "/ch/03/eq": ["ON"],
-        "/ch/03/eq/1": ["PEQ", 124.7, 0.0, 2.0],
+        "/ch/01/config": ["Overhd G", 4, 0, 0],
+        "/ch/01/preamp": [0.5, 0, 1, 1, 0.8199999928474426],
+        "/ch/01/gate": [1, 3, 0.09375, 0.7894737124443054, 0.0416666679084301, 0.6399999856948853, 0.7200000286102295, 0],
+        "/ch/01/dyn": [1, 0, 0, 1, 0.18333333730697632, 7, 0.20000000298023224, 0.0, 0.15000000596046448, 0.46000000834465027, 0.4099999964237213, 1.0, 0, 0],
+        "/ch/01/eq": [1],
+        "/ch/01/eq/1": [2, 0.26499998569488525, 0.5, 0.4647887349128723],
     }
-    values = snapshot_to_preset_values(replies, "/ch/03")
-    assert values["config"] == {"name": "Slap Top", "color": 9}
-    assert values["hpf"] == {"on": True, "freq": 110.0}
-    assert values["gate"]["on"] is True and values["gate"]["range"] == 60.0
-    assert values["comp"]["ratio"] == 3.0 and values["comp"]["mgain"] == 6.0
-    assert values["eq"][0] == {"band": 1, "type": "PEQ", "freq": 124.7, "gain": 0.0, "q": 2.0}
+    values = snapshot_to_preset_values(replies, "/ch/01")
+    assert values["config"] == {"name": "Overhd G", "color": 4}
+    assert values["hpf"] == {"on": True, "freq": pytest.approx(233.3, abs=0.5)}
+    assert values["gate"]["on"] is True
+    assert values["gate"]["thr"] == pytest.approx(-72.5)
+    assert values["gate"]["range"] == pytest.approx(48.0)
+    assert values["gate"]["attack"] == pytest.approx(5.0)
+    assert values["gate"]["hold"] == pytest.approx(31.7, abs=0.3)
+    assert values["gate"]["release"] == pytest.approx(615.4, abs=1.0)
+    assert values["comp"]["on"] is True
+    assert values["comp"]["thr"] == pytest.approx(-49.0)
+    assert values["comp"]["ratio"] == 5.0
+    assert values["comp"]["knee"] == pytest.approx(1.0)
+    assert values["comp"]["mgain"] == 0.0
+    assert values["comp"]["attack"] == pytest.approx(18.0)
+    assert values["comp"]["hold"] == pytest.approx(4.0, abs=0.2)
+    assert values["comp"]["release"] == pytest.approx(77.4, abs=0.5)
+    assert values["comp"]["mix"] == pytest.approx(100.0)
+    assert values["eq"][0] == {
+        "band": 1,
+        "type": "PEQ",
+        "freq": pytest.approx(124.7, abs=0.2),
+        "gain": 0.0,
+        "q": pytest.approx(1.96, abs=0.01),
+    }
     assert "preamp" not in values
     assert "eq_on" not in values
 

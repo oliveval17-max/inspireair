@@ -118,6 +118,7 @@ class Comp:
     thr: float = -16.0
     ratio: float = 4.0
     attack: float = 12.0
+    hold: float = 10.0
     release: float = 90.0
     knee: float = 2.0
     mgain: float = 3.0
@@ -130,6 +131,7 @@ class Comp:
             thr=float(data.get("thr", -16.0)),
             ratio=float(data.get("ratio", 4.0)),
             attack=float(data.get("attack", 12.0)),
+            hold=float(data.get("hold", 10.0)),
             release=float(data.get("release", 90.0)),
             knee=float(data.get("knee", 2.0)),
             mgain=float(data.get("mgain", 3.0)),
@@ -143,6 +145,7 @@ class Comp:
                 f"comp.ratio = {self.ratio} n'est pas un cran valide (crans : {COMP_RATIOS})"
             )
         _check("comp.attack", self.attack, 0.0, 120.0)
+        _check("comp.hold", self.hold, 0.02, 2000.0)
         _check("comp.release", self.release, 5.0, 4000.0)
         _check("comp.knee", self.knee, 0.0, 5.0)
         _check("comp.mgain", self.mgain, 0.0, 24.0)
