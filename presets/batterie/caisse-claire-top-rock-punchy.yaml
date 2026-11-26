@@ -9,6 +9,9 @@ notes: >-
   peau frappée Remo Powerstroke clear. Attaque marquée à 3-4 kHz, corps à 200 Hz, gate rapide
   pour couper le charley. Pour un son plus large : variante Top+Bottom avec
   un second SM57 sous la caisse, polarité inversée à vérifier à l'oreille.
+config:
+  name: "Snare 13"
+  color: 9
 hpf:
   "on":  true
   freq: 100

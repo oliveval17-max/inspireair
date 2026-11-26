@@ -18,9 +18,9 @@ entries:
   - channel: 5
     preset: ../presets/batterie/tom-medium-13-rock-punchy.yaml
   - channel: 6
-    preset: ../presets/batterie/tom-basse-14-16-rock-punchy.yaml
+    preset: ../presets/batterie/tom-basse-14-rock-punchy.yaml
   - channel: 7
-    preset: ../presets/batterie/tom-basse-14-16-rock-punchy.yaml
+    preset: ../presets/batterie/tom-basse-16-rock-punchy.yaml
   - channel: 8
     preset: ../presets/batterie/overhead-paire-ab-rock-punchy.yaml
   - channel: 9

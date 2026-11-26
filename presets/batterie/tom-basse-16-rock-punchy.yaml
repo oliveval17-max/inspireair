@@ -1,0 +1,50 @@
+instrument: Batterie
+element: Tom basse 14-16
+style: Rock punchy
+notes: >-
+  Standard tom basse 16", micro dynamique type cardioïde (T-Bone
+  CD55 ou équivalent), pointé vers le centre de la peau, 30° d'angle. Peau Evans G2 blanche.
+  HPF à 65 Hz : la fondamentale du 16" descend sous les 80 Hz, on garde.
+  Gate patient (hold 120 ms, release 400 ms) : les toms basse résonnent
+  longuement, un gate court les décapite. EQ : fondamental autour de
+  85 Hz, creux de "carton" à 400 Hz. Compresseur 3:1 à release longue.
+  Le corps d'EQ est à 85 Hz, plus bas que le 14" (voir tom-basse-14).
+config:
+  name: "Tom 16"
+  color: 7
+hpf:
+  "on": true
+  freq: 65
+gate:
+  "on": true
+  thr: -42.0
+  range: 50.0
+  attack: 1
+  hold: 120
+  release: 400
+eq:
+  - band: 1
+    type: PEQ
+    freq: 85
+    gain: 4.0
+    q: 1.8
+  - band: 2
+    type: PEQ
+    freq: 400
+    gain: -4.0
+    q: 1.8
+  - band: 3
+    type: HShv
+    freq: 5000
+    gain: 1.5
+    q: 0.8
+comp:
+  "on": true
+  thr: -18.0
+  ratio: 3.0
+  attack: 12
+  hold: 10
+  release: 350
+  knee: 2
+  mgain: 5.0
+  mix: 100
