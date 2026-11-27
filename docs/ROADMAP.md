@@ -201,6 +201,49 @@ Preset standard (dépôt)  ×  Profil de salle (~/.inspireair/rooms/)  →  Tran
 
 ---
 
+## Support et remontée de bugs
+
+> Question de l'utilisateur (novembre 2026) : comment un utilisateur signale un
+> bug ? Deux portes, une même boîte — les geeks passent par GitHub, les novices
+> par un mail.
+
+### Dispositif à deux portes
+
+- **Porte geek** → **Issues GitHub**, avec templates d'issue à prévoir
+  (champs guidés) : « bug » et « suggestion de preset » — pour éviter les
+  issues vagues.
+- **Porte novice** → adresse **Proton Mail** (confidentiel, crédible, cohérent
+  avec l'esprit community du projet) ; à créer par l'utilisateur
+  (ex. `inspireair@proton.me`). Lien cliquable dans la fenêtre **« À propos »**
+  de la GUI, avec la checklist ci-dessous **affichée directement dans la
+  fenêtre** (pas dans un fichier à chercher). L'adresse sera aussi ajoutée au
+  README dès sa création.
+
+### Checklist « rapport utile dès le premier mail »
+
+À afficher dans « À propos » :
+
+1. Ce qu'on a fait / ce qu'on attendait / ce qui s'est passé (trois phrases).
+2. Version d'InspireAir + modèle/firmware de console — **déjà affichés dans la
+   barre d'état**, l'utilisateur n'a qu'à les recopier.
+3. Le fichier preset en cause, s'il y en a un.
+4. Une capture d'écran si le problème est visuel.
+5. Facultatif : le snapshot undo (`~/.inspireair/snapshots/`), très
+   diagnostique.
+
+### Cerise future : `inspireair report`
+
+Commande CLI + bouton GUI qui **collecte automatiquement** (version, `/info`
+de la console, fichier preset) et affiche un texte prêt à copier-coller dans le
+mail. Zéro effort pour le novice, rapport parfait pour nous.
+
+### Règle de courtoisie / confidentialité
+
+Ne jamais demander les snapshots contenant le mix d'un tiers sans l'accord de
+l'utilisateur ; l'adresse IP locale de la console n'est pas une donnée sensible.
+
+---
+
 ## Autres idées en réserve
 
 - Suffixage automatique des paires dans le moteur de kit (« OH G » / « OH D »).
