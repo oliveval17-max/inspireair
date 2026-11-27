@@ -81,6 +81,50 @@ de GUI.
 
 ---
 
+## Internationalisation (fr / en / de)
+
+> Question de l'utilisateur (novembre 2026) : le logiciel fini pourra-t-il
+> exister en anglais et en allemand ? Oui — mais **un seul logiciel, trois
+> langues**, pas trois versions séparées.
+
+### Approche retenue
+
+- La traduction vit dans des **fichiers de langue**, pas dans le code :
+
+  ```
+  resources/i18n/
+    inspireair_fr.ts   ← français (langue d'origine)
+    inspireair_en.ts   ← anglais
+    inspireair_de.ts   ← allemand
+  ```
+
+- Langue choisie au lancement (détection du système + menu de préférences).
+- **PySide6 embarque l'outillage** (Qt Linguist, fichiers `.ts`/`.qm`) : un des
+  bénéfices secondaires du choix du framework. Ajouter une 4e langue plus tard
+  = traduire un fichier de plus, zéro code.
+- Traductions rédigées avec attention au **vocabulaire métier authentique**
+  (ex. allemand : *Klangregelung*, *Rauschsperre*) plutôt qu'au mot-à-mot.
+
+### Les trois subtilités à prévoir dès le début de la GUI
+
+1. **Étiquettes de taxonomie** : ce sont des données, pas des textes d'interface.
+   Prévoir un identifiant neutre par entrée (`kick-drum`, `snare-drum`…) et une
+   étiquette par langue. À intégrer au modèle **dès le début**, sinon rétrofit
+   pénible.
+2. **Notes de prise de son des presets** : trois options — laisser en français,
+   traduire à la main les standards (vitrine du projet), ou champ `notes` par
+   langue. Penchant : traduire manuellement les standards.
+3. **Discipline de code** : règle d'or « jamais de texte en dur dans la GUI » —
+   tout passe par les fichiers de langue. À appliquer dès la première fenêtre.
+
+### Calendrier
+
+- Rien à faire aujourd'hui (cœur d'abord). La règle de discipline et les
+  identifiants neutres de taxonomie entrent en jeu **dès le démarrage de la
+  GUI** ; les fichiers `en`/`de` se traduiront quand l'interface sera stable.
+
+---
+
 ## Idée archivée : Jauge d'environnement acoustique (profil de salle)
 
 > Idée de l'utilisateur, novembre 2026, issue d'expériences de balance stressantes
