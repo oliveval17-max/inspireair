@@ -12,11 +12,72 @@ avec l'utilisateur ; rien ici n'engage de date.
    « Rock punchy », déclinaison d'autres styles par diff (Funk sec, Jazz ouvert),
    ouverture des autres sections (Basse, Voix, Guitares, Claviers, Cuivres & Vents,
    Percussions).
-2. **Interface graphique** — mode Novice/Pro, navigation Instrument → Élément →
-   Style, recherche/favoris, mini-courbes EQ. Choix du framework à instruire
-   (Tauri / PyQt / GTK).
+2. **Interface graphique** — voir la section « GUI : décisions actées » ci-dessous.
 3. **Diffusion** — installation propre (pipx / .deb), distribution communautaire
    des presets.
+
+---
+
+## GUI : décisions actées (novembre 2026)
+
+Décisions prises avec l'utilisateur, point par point, avant toute ligne de code
+de GUI.
+
+### Cibles d'usage
+
+- **Laptop uniquement** — pas de smartphone/tablette : réflexes clavier/souris,
+  risque de fausses manip en live sur écran tactile. InspireAir est un poste de
+  travail de préparation et d'assistance ; le mix de secours reste sur l'app
+  mobile Behringer.
+- Le **CLI reste le socle** : la GUI est une couche au-dessus des mêmes modules
+  (`model`, `codecs`, `oscmap`, `snapshot`, `kit`), pas un moteur parallèle.
+
+### Framework
+
+- **PySide6** (portage officiel Qt pour Python, licence **LGPL**) — compatible
+  avec la licence MIT du projet et la distribution communautaire visée.
+  PyQt6 écarté (GPL/commercial : plafonnerait la diffusion).
+
+### Principes visuels
+
+- Thème sombre, présentation moderne, sections nettement cloisonnées.
+- **Aucune icône ni emoji pour les instruments** : libellés typographiés, un
+  filet de couleur discret par section (écho sage des couleurs de tranche XR18).
+  Objectif : un rendu « pro » même aux yeux des novices.
+- Logo SVG en filigrane de la fenêtre principale (opacité très faible, ≤ 8 %,
+  optionnel) — à dessiner en SVG dans le dépôt.
+- **Icône d'application à concevoir** (idée notée, sans urgence).
+
+### Structure de la fenêtre principale
+
+- **Une seule fenêtre, vues empilées + fil d'Ariane** (Accueil > Batterie >
+  Grosse caisse > Rock punchy). Dialogues séparés réservés aux tâches cadrées :
+  Aspirer, Importer, Comparer.
+- **Navigation taxonomie en panneau latéral + cartes** : sections à gauche
+  (6 sections), éléments au centre, presets en cartes cliquables (notes de prise
+  de son, mini-courbe EQ, badges HPF/Gate/EQ/Dyn). Trois clics maximum, position
+  toujours visible. Menus déroulants en cascade écartés.
+- **Barre d'actions permanente** : les deux seuls « gros boutons » de
+  l'application sont **Pousser** (avec sélecteur de canal cible) et **Annuler**
+  (undo), raccourcis clavier dédiés. Ce sont les seuls gestes physiques, seuls
+  dignes de boutons pleine largeur. « Comparer » en action secondaire.
+- **Carte « Ma salle »** (future jauge d'environnement acoustique) sur la
+  fenêtre d'accueil, au-dessus de la navigation : statut du profil de salle
+  actif/inactif. Présente dès la conception, fonctionnelle au stade S1 de la
+  jauge (voir section dédiée).
+- **Barre d'état permanente** : type de console, adresse IP, état de connexion
+  (voyant vert/rouge), version d'InspireAir, mode Novice/Pro.
+- **Encart crédits** : pied de fenêtre + boîte « À propos » —
+  « Conception oliveval17-max avec Mistral — d'après le travail de
+  P. Maillot (X32-Behringer) et K. Mitchell ».
+
+### Modes Novice / Pro
+
+- Même moteur, deux habillages : un interrupteur, pas deux logiciels.
+- **Novice** : guidé et assisté, phrases rédigées explicatives, choix restreints,
+  valeurs avancées masquées.
+- **Pro** : mêmes données en panneau dense, valeurs éditables, dry-run et
+  filtrage de blocs accessibles directement.
 
 ---
 
