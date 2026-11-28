@@ -244,6 +244,31 @@ l'utilisateur ; l'adresse IP locale de la console n'est pas une donnée sensible
 
 ---
 
+## Retours de la communauté (premier post FB, novembre 2026)
+
+Première présentation d'InspireAir sur un groupe Facebook français Behringer XR.
+Retours positifs ; demandes concrètes à traiter comme backlog de presets :
+
+- **Voix** : féminine (micro Sennheiser), masculine (Sennheiser e835) —
+  demande explicite de Twipsi K.
+- **Guitares** : acoustique en DI, électrique (SM58) — demande explicite ;
+  une remarque nuancée d'un autre utilisateur (« moins utile pour la guitare
+  électrique ») confirme que la valeur perçue porte sur les instruments
+  **à traitement** (kick, snare, OH, chant, sax, trompette).
+- **Cuivres** : sax, trompette — cités spontanément comme prioritaires.
+
+Enseignements :
+
+- La demande du monde réel correspond à la taxonomie existante — pas de
+  refonte à prévoir, l'arborescence est validée de l'extérieur.
+- Les demandes arrivent avec des micros précis (e835, SM58) : le format
+  « preset documenté avec micros conseillés » répond exactement à l'attente.
+- Un utilisateur du groupe envisage de passer à Linux grâce au projet —
+  candidat potentiel au rôle de bêta-testeur Windows le moment venu (la
+  compilation Windows sera testée par un volontaire, pas livrée à l'aveugle).
+
+---
+
 ## Autres idées en réserve
 
 - Suffixage automatique des paires dans le moteur de kit (« OH G » / « OH D »).
